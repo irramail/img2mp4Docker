@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+<style>
+  body { background-color: rgb(180, 180, 180); color: white; }
+  img { border: 1px solid white; margin: 5px; }
+  .large { width: 100%; float: right; }
+  .selected { margin: 0; border: 6px solid #60b5cc; }
+  .content { margin: 40px auto; width: 100%; }
+  #thumbnails { width: 100%; float: left; }
+  h1 { font-family: Verdana; color: #60b5cc; }
+</style>
+</head>
+<body>
+<div>
+    <input type="button" value="Repeat"
+            onClick="setBgCounter()">
+</div>
+<script>
+function setBgCounter()
+{
+var xhttpSetBgCounter = new XMLHttpRequest();
+xhttpSetBgCounter.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        //ok
+    }
+};
+xhttpSetBgCounter.open("POST", "/");
+xhttpSetBgCounter.setRequestHeader("Content-Type", "application/json");
+xhttpSetBgCounter.send(JSON.stringify({"jsonrpc": "2.0", "method": "set_repeat", "id":1 }));
+}
+</script>
+</body>
+</html>

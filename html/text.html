@@ -1,0 +1,279 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<style>
+  body { background-color: rgb(180, 180, 180); color: white; }
+  img { border: 1px solid white; margin: 5px; }
+  .large { width: 100%; float: right; }
+  .selected { margin: 0; border: 6px solid #60b5cc; }
+  .content { margin: 40px auto; width: 100%; }
+  #thumbnails { width: 100%; float: left; }
+  h1 { font-family: Verdana; color: #60b5cc; }
+</style>
+</head>
+<body>
+<div id="text">
+<textarea rows="30" cols="130" name="text" id="textLines" wrap="off"></textarea>
+<span id="counter"></span>
+<div>
+    <input type="button" value="Without text"
+            onClick="cleanText()">
+    <input type="button" value="Remove ---"
+            onClick="cleanMinuses()">
+</div>
+<div><a href="/m4a/hi.wav" download>Download</a></div>
+<div id="audioText">
+<audio id="track" controls>
+  <source src="/m4a/hi.wav" type="audio/wav">
+Your browser does not support the audio element.
+</audio>
+</div>
+<form action="">
+<select id="voices" onchange="setVoice(this.value)">
+<option value="Samantha">Samantha</option>
+<option value="Milena">Milena</option>
+</select>
+</form>
+<form action="">
+<select id="secs" onchange="setSec(this.value)">
+<option value="0.05">20 sec</option>
+<option value="0.1">10 sec</option>
+<option value="0.125">8 sec</option>
+<option value="0.14">7 sec</option>
+<option value="0.16">6 sec</option>
+<option value="0.2">5 sec</option>
+<option value="0.25">4 sec</option>
+<option value="0.33">3 sec</option>
+<option value="0.5">2 sec</option>
+<option value="1">1 sec</option>
+</select>
+</form>
+<div>
+    <input type="color" id="bgcolor"
+           value="#ffffff" onchange="setColor(this.value)">
+</div>
+<div>
+  <input type="range" id="ypercent"
+         min="10" max="99" value="10" onchange="setYpercent(this.value)">
+  <span id="labelYPercent">0</span>
+</div>
+<div>
+    <input type="button" value="Without photos"
+            onClick="setBgCounter()">
+</div>
+</div>
+<script>
+function setVoice(voice)
+{
+var xhttpSetVoice = new XMLHttpRequest();
+xhttpSetVoice.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        //ok
+    }
+};
+xhttpSetVoice.open("POST", "/");
+xhttpSetVoice.setRequestHeader("Content-Type", "application/json");
+xhttpSetVoice.send(JSON.stringify({"jsonrpc": "2.0", "method": "set_voice", "id":1, "params": [voice] }));
+}
+
+function setSec(sec)
+{
+var xhttpSetSec = new XMLHttpRequest();
+xhttpSetSec.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        //ok
+    }
+};
+xhttpSetSec.open("POST", "/");
+xhttpSetSec.setRequestHeader("Content-Type", "application/json");
+xhttpSetSec.send(JSON.stringify({"jsonrpc": "2.0", "method": "set_sec", "id":1, "params": [sec] }));
+}
+
+function setColor(color)
+{
+var xhttpSetColor = new XMLHttpRequest();
+xhttpSetColor.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        //ok
+    }
+};
+xhttpSetColor.open("POST", "/");
+xhttpSetColor.setRequestHeader("Content-Type", "application/json");
+xhttpSetColor.send(JSON.stringify({"jsonrpc": "2.0", "method": "set_color", "id":1, "params": [color] }));
+}
+
+function setYpercent(ypercent)
+{
+var xhttpSetYpercent = new XMLHttpRequest();
+xhttpSetYpercent.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+var labelYPercents = document.getElementById('labelYPercent');
+labelYPercents.innerHTML=ypercent;
+        //ok
+    }
+};
+xhttpSetYpercent.open("POST", "/");
+xhttpSetYpercent.setRequestHeader("Content-Type", "application/json");
+xhttpSetYpercent.send(JSON.stringify({"jsonrpc": "2.0", "method": "set_ypercent", "id":1, "params": [ypercent] }));
+}
+
+function setBgCounter()
+{
+var xhttpSetBgCounter = new XMLHttpRequest();
+xhttpSetBgCounter.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        //ok
+    }
+};
+xhttpSetBgCounter.open("POST", "/");
+xhttpSetBgCounter.setRequestHeader("Content-Type", "application/json");
+xhttpSetBgCounter.send(JSON.stringify({"jsonrpc": "2.0", "method": "set_bgcounter", "id":1, "params": [document.getElementById('counter').innerHTML] }));
+}
+
+function cleanText()
+{
+  var txts = document.getElementById('textLines');
+
+  txts.value = '~' + txts.value.replace(/\n|\./g, '\n--- ').replace(/\n--- \n/g, '\n\n');
+}
+
+function cleanMinuses()
+{
+  var txts = document.getElementById('textLines');
+
+  txts.value = txts.value.replace(/--- /g, '').replace(/~/g, '');
+}
+
+window.onload = function() { 
+var xhttpGetVoice = new XMLHttpRequest();
+
+xhttpGetVoice.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       var getVoice = JSON.parse(this.response).result;
+var voices = document.getElementById('voices');
+voices.value=getVoice;
+    }
+};
+xhttpGetVoice.open("POST", "/");
+xhttpGetVoice.setRequestHeader("Content-Type", "application/json");
+xhttpGetVoice.send(JSON.stringify({"jsonrpc": "2.0", "method": "get_voice", "id":1, "params": [] }));
+
+
+var xhttpGetSec = new XMLHttpRequest();
+
+xhttpGetSec.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       var getSec = JSON.parse(this.response).result;
+var secs = document.getElementById('secs');
+secs.value=getSec;
+    }
+};
+xhttpGetSec.open("POST", "/");
+xhttpGetSec.setRequestHeader("Content-Type", "application/json");
+xhttpGetSec.send(JSON.stringify({"jsonrpc": "2.0", "method": "get_sec", "id":1, "params": [] }));
+
+var xhttpGetColor = new XMLHttpRequest();
+
+xhttpGetColor.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       var getColor = JSON.parse(this.response).result;
+var colors = document.getElementById('bgcolor');
+colors.value=getColor;
+    }
+};
+xhttpGetColor.open("POST", "/");
+xhttpGetColor.setRequestHeader("Content-Type", "application/json");
+xhttpGetColor.send(JSON.stringify({"jsonrpc": "2.0", "method": "get_color", "id":1, "params": [] }));
+
+
+var xhttpGetYpercent = new XMLHttpRequest();
+
+xhttpGetYpercent.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       var getYpercent = JSON.parse(this.response).result;
+var ypercents = document.getElementById('ypercent');
+ypercents.value=getYpercent;
+document.getElementById('labelYPercent').innerHTML=getYpercent;
+    }
+};
+xhttpGetYpercent.open("POST", "/");
+xhttpGetYpercent.setRequestHeader("Content-Type", "application/json");
+xhttpGetYpercent.send(JSON.stringify({"jsonrpc": "2.0", "method": "get_ypercent", "id":1, "params": [] }));
+
+
+                var trackTimerVar = setInterval(trackTimer, 10000);
+
+                function trackTimer()
+                {
+                    var xhttpSTexts = new XMLHttpRequest();
+                    xhttpSTexts.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            var SText = JSON.parse(this.response).result;
+                            if (SText.length == 0) {
+				var track = document.getElementById('track');
+				if (track.hidden) {
+			        var audioText = document.getElementById('audioText');
+				
+			       innerHTML='<audio id="track" controls><source src="/m4a/hi.wav" type="audio/wav">Your browser does not support the audio element.</audio>';
+				audioText.innerHTML=innerHTML;
+				}
+				
+			    }
+                        }
+                    };
+                    xhttpSTexts.open("POST", "/");
+                    xhttpSTexts.setRequestHeader("Content-Type", "application/json");
+                    xhttpSTexts.send(JSON.stringify({"jsonrpc": "2.0", "method": "get_stext", "id": 1, "params": []}));
+                }
+
+ var textTimer = {};
+  var txts = document.getElementById('textLines'); 
+
+var xhttpTexts = new XMLHttpRequest();
+xhttpTexts.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       var allText = JSON.parse(this.response).result.replace(/\|/g, '\n');
+       txts.innerHTML = allText;
+       document.getElementById('counter').innerHTML=allText.split('\n').length;
+    }
+};
+xhttpTexts.open("POST", "/");
+xhttpTexts.setRequestHeader("Content-Type", "application/json");
+xhttpTexts.send(JSON.stringify({"jsonrpc": "2.0", "method": "get_text", "id":1, "params": [] }));
+
+
+      var func = function() { 
+                    if (textTimer['textLines'] !== undefined) {
+                        clearTimeout(textTimer['textLines']);
+                    }
+
+                    textTimer['textLines'] = setTimeout(function () {
+                        textTimer['textLines'] = undefined;
+
+    var xmlhttpNames = new XMLHttpRequest();
+    xmlhttpNames.open("POST", "/");
+    xmlhttpNames.setRequestHeader("Content-Type", "application/json");
+    xmlhttpNames.onreadystatechange = function() { // Call a function when the state changes.
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                                var track = document.getElementById('track');
+                                track.hidden=true;
+            }
+          }
+	var oneLine = txts.value.replace(/\n|\./g, '|');
+	document.getElementById('counter').innerHTML =  oneLine.split('|').length;
+        xmlhttpNames.send(JSON.stringify({"jsonrpc": "2.0", "method": "set_text", "id":1, "params": [oneLine]}));	
+        }, 10000);
+      }
+
+      txts.onkeyup = func;
+      txts.onpaste = func;
+
+
+
+}
+</script>
+</body>
+</html>

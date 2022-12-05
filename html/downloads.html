@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+<style>
+  body { background-color: rgb(180, 180, 180); color: white; }
+  img { border: 1px solid white; margin: 5px; }
+  .large { width: 100%; float: right; }
+  .selected { margin: 0; border: 6px solid #60b5cc; }
+  .content { margin: 40px auto; width: 100%; }
+  #thumbnails { width: 100%; float: left; }
+  h1 { font-family: Verdana; color: #60b5cc; }
+</style>
+</head>
+<body>
+<div id="files">
+</div>
+<script>
+   function DeleteClip (name) {
+    var xmlhttpNames = new XMLHttpRequest();
+    xmlhttpNames.open("POST", "/");
+    xmlhttpNames.setRequestHeader("Content-Type", "application/json");
+    xmlhttpNames.onreadystatechange = function() { // Call a function when the state changes.
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+		document.getElementById(name).remove();
+            }
+          }
+        xmlhttpNames.send(JSON.stringify({"jsonrpc": "2.0", "method": "delete", "id":1, "params": [name]}));
+   }
+    var xmlhttpNames = new XMLHttpRequest();
+    xmlhttpNames.open("POST", "/");
+    xmlhttpNames.setRequestHeader("Content-Type", "application/json");
+    xmlhttpNames.onreadystatechange = function() { // Call a function when the state changes.
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            var a = this.response;
+            idNames = JSON.parse(a).result;
+            if (idNames.length > 0) {
+                var videoHTML = "";
+                var files=idNames.slice(1).split(',');
+                for(var name in files) {
+                        videoHTML = '<div id="'+ files[name] +'"><a href="/downloads/'+ files[name] +'" download>Download</a><a id="myLink" title="Remove" href="#" onclick="DeleteClip(\''+ files[name] +'\');return false;">Remove</a><br \><video width="400" controls preload="none"><source src="/downloads/' + files[name] + '" type="video/mp4">Your browser does not support HTML5 video.</video></div>' + videoHTML;
+                }
+                document.getElementById('files').innerHTML = videoHTML;
+            }
+          }
+        }
+        xmlhttpNames.send(JSON.stringify({"jsonrpc": "2.0", "method": "get_files", "id":1 }));
+
+
+
+
+    var myVar = setInterval(myTimer, 5000);
+
+    function myTimer() 
+{
+    var xmlhttpNames = new XMLHttpRequest();
+    xmlhttpNames.open("POST", "/");
+    xmlhttpNames.setRequestHeader("Content-Type", "application/json");
+    xmlhttpNames.onreadystatechange = function() { // Call a function when the state changes.
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            var a = this.response;
+            idNames = JSON.parse(a).result;
+	    if (idNames !== undefined && idNames.length > 0) {
+		var videoHTML = "";
+		var files=idNames.slice(1).split(',');
+		for(var name in files) {
+			videoHTML = '<div id="'+ files[name] +'"><a href="/downloads/'+ files[name] +'" download>Download</a><a id="myLink" title="Remove" href="#" onclick="DeleteClip(\''+ files[name] +'\');return false;">Remove</a><br \><video width="400" controls><source src="/downloads/' + files[name] + '" type="video/mp4">Your browser does not support HTML5 video.</video></div>' + videoHTML;
+		}
+		if (videoHTML.length > 0) {
+			document.getElementById('files').innerHTML = videoHTML + document.getElementById('files').innerHTML;
+		}
+            }
+          }
+	}
+	xmlhttpNames.send(JSON.stringify({"jsonrpc": "2.0", "method": "get_new_files", "id":1 }));
+    }
+
+</script>
+</body>
+</html>
