@@ -2,7 +2,7 @@ docker build -t someprocesses .
 
 docker run --restart unless-stopped  -dp 8000:80 someprocesses
 
-You have to use localhot:8000/index.html
+You have to use localhost:8000/index.html
 
 #How to use
 
